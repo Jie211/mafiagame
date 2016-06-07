@@ -1,4 +1,4 @@
-//evanbrumley Spyfall access link
+//access link
 function getAccessLink()
 {
   var game = getCurrentGame();
@@ -16,12 +16,13 @@ function stateMachine()
 {
   var gameID = Session.get("gameID");
   var playerID = Session.get("playerID");
-  if(!gameID || !playerID){  
+//if have no game and player yet -> start_screen
+  if(!gameID || !playerID){
 
       Session.set("template_select","start_screen");
       return;
   }
-  
+
   var game = Games.findOne(gameID);
   var player = Players.findOne(playerID);
   if (!game || !player){
@@ -30,35 +31,42 @@ function stateMachine()
       Session.set("template_select", "start_screen");
       return;
   }
+  //playerlist
   if(game.state === "waitingForPlayers"){
     Session.set("template_select","queue_list");
   }
+  //day message
   else if(game.state === "day")
   {
     Session.set("template_select","day");
   }
+  //night message
    else if(game.state === "night")
   {
     Session.set("template_select","day");
   }
+  //inspection sniper
   else if(game.state === "inspection")
   {
     Session.set("template_select","day");
   }
+  //medic doctor
   else if(game.state === "medic")
   {
     Session.set("template_select","day");
   }
+  //game over
   else if(game.state === "game_over")
   {
     Session.set("template_select","game_over");
   }
+  //nothing -> start_screen
   else if(game.state === null)
   {
     Session.set("template_select","start_screen");
   }
 }
-//evanbrumley Spyfall
+//copy from Spyfall
 function createSessionID()
 {
   var ID = "";
@@ -94,16 +102,16 @@ function generateNewGame(game, name)
 {
   var game = {
     accessCode: createSessionID(),
-    createdAt: moment().toDate().getTime(),
+    createdAt: moment().toDate().getTime(),//moment library for date
     state: "waitingForPlayers",
-    gameTime: "Day",
+    gameTime: "Day",//memo maybe change to nighttime
     global: true,//variable for local game or global
     special: null, //This is the end game message
     winner: null, //Who the winner is
     waiting: "Players", //Display who we're waiting on
     day: 1 // Length of Game
   };
-  var gameID = Games.insert(game);
+  var gameID = Games.insert(game);//insert game to Collection
   game = Games.findOne(gameID);
   return game;
 }
@@ -133,12 +141,11 @@ function generateNewPlayer(game, name, pass)
 function createCustomArray(word,amount)
 {
   var tempArray = [];
-  if(amount != 0 ){
-  for(var i = 0; i < amount; i++)
-  {
-    tempArray.push(word);
-  }
-  return tempArray;
+  if (amount != 0) {
+      for (var i = 0; i < amount; i++) {
+          tempArray.push(word);
+      }
+      return tempArray;
   }
   return tempArray;
 }
@@ -147,6 +154,7 @@ function createCustomArray(word,amount)
 function checkVotes(day)
 {
     var game = getCurrentGame();
+    //fetch all the player and mafia
     var totalPlayers = Players.find({'gameID': game._id,  'alive': true, 'isNarrator': false},{}).fetch();
 
     var totalMafia = Players.find({'gameID': game._id,'isMafia':true, 'alive':true},{}).fetch();
@@ -181,7 +189,7 @@ function checkVotes(day)
             Games.update(game._id, {$set: {winner: "The Mafia",special: "The Mafioso were equal to the Civilians, Mafia win.",state: 'game_over'}});
         }
         else
-        {
+        {//if game is still runing -> turn gametime to night
           Games.update(game._id, {$set: {gameTime: "Night"}});
           totalPlayers.forEach(function(each)
           {
@@ -191,16 +199,16 @@ function checkVotes(day)
           chats.forEach(function(chat){
             Chat.remove(chat._id);
           });
-
+          //may be remove this later
           var isInspectorStillAlive = Players.find({'gameID': game._id,  'alive': true, 'role': 'inspector'},{}).fetch();
           var isDoctorStillAlive = Players.find({'gameID': game._id,  'alive': true, 'role': 'doctor'},{}).fetch();
           if (isInspectorStillAlive.length == 1 && isDoctorStillAlive.length == 1)
           {
-            Games.update(game._id, {$set: {waiting: "Inspector",state: 'inspection'}});  
+            Games.update(game._id, {$set: {waiting: "Inspector",state: 'inspection'}});
           }
           else if (isInspectorStillAlive.length == 1 && isDoctorStillAlive.length == 0)
           {
-            Games.update(game._id, {$set: {waiting: "Inspector",state: 'inspection'}}); 
+            Games.update(game._id, {$set: {waiting: "Inspector",state: 'inspection'}});
           }
           else if(isDoctorStillAlive.length == 1 && isInspectorStillAlive.length == 0 )
           {
@@ -265,7 +273,7 @@ function checkVotes(day)
       }
     }
 
-function shuffleArray(array) 
+function shuffleArray(array)
 {
     for (var i = array.length - 1; i > 0; i--) {
         var j = Math.floor(Math.random() * (i + 1));
@@ -278,16 +286,26 @@ function shuffleArray(array)
 
 function deaths()
 {
-  var deaths = ['were shot',
-  'were hung',
-  'were decapitated',
-  'were suffocated with a pillow',
-  'were drowned',
-  'were stung',
-  'were sucked into a toilet',
-  'tripped on a rock',
-  'choked on a nugget',
-  'traded his families only cow for "Magical" beans, and were mugged'];
+  var deaths = ['被人扔进水里，不会游泳淹死',
+  '被人问到年龄的时候装嫩，被打死',
+  '被人用割喉',
+  '被人用砖块砸死',
+  '被强行塞入20个狗不理包子噎死',
+  '被人用三轮车撞死',
+  '被人塞到马桶里溺死',
+  '被人关起来饿死',
+  '被送进传销组织，逃出来的时候被传销人打死',
+  '被关进基佬监狱，洗澡的时候不小心肥皂掉了。。。卒',
+  '被扔进洗衣机绞死',
+  '',
+  '',
+  '',
+  '',
+  '',
+  '',
+  '',
+  ''
+];
   var item = deaths[Math.floor(Math.random()*deaths.length)];
   return item;
 }
@@ -347,7 +365,7 @@ function mafiaNews(playerName, healed)
   else
   {
     var reason = "Last night " + playerName + " was " + verb + " " + location + " unfortunaly they " + death + " by " + who + "." + "Luckily a well trained doctor was around. So yeah, they didn't die. The plot Thickens...";
-  } 
+  }
   Meteor.subscribe('news',game._id);
   if(game.global)
   {
@@ -446,7 +464,7 @@ function assignRoles(players)
   {
     var totalInspector = 0;
   }
-  
+
   var totalCivilian = totalPlayers - totalMafia - totalDoctor - totalInspector - narr;
 
   var mafia = createCustomArray("mafioso",totalMafia);
@@ -464,11 +482,11 @@ function assignRoles(players)
  });
 
 }
-function updateScroll() 
+function updateScroll()
 {
 	if($('#chat_sms_display')[0].scrollHeight > $('#chat_sms_display').height())
 	{
-	  $("#chat_sms_display").animate({ 
+	  $("#chat_sms_display").animate({
 	    scrollTop: $('#chat_sms_display')[0].scrollHeight
 	  }, 200);
 	}
@@ -512,7 +530,7 @@ function reset_user()
 }
 
 if (hasHistoryApi()){
-  function trackUrlState() 
+  function trackUrlState()
     {
       var accessCode = null;
       var game = getCurrentGame();
@@ -559,11 +577,11 @@ Template.main_menu.helpers({
 /*--------------------------Start_screen---------------------*/
 
   Template.start_screen.events({
-    'click #create_game': function () 
+    'click #create_game': function ()
     {
       Session.set('template_select', 'create_game');
     },
-    'click #join_game': function () 
+    'click #join_game': function ()
     {
       Session.set('template_select', 'join_game');
     }
@@ -577,11 +595,11 @@ Template.create_game.helpers({
 });
 
   Template.create_game.events({
-    'click #back': function () 
+    'click #back': function ()
     {
       Session.set('template_select', 'start_screen');
     },
-    'click #submit': function (event) 
+    'click #submit': function (event)
     {
       event.preventDefault();
       Session.set("isHost", true);
@@ -589,7 +607,7 @@ Template.create_game.helpers({
       var pass = $('#pass').val();
       if(!playerName || !pass)
       {
-        FlashMessages.sendInfo("Please fill out all fields");
+        FlashMessages.sendInfo("哥。。。快把该填的都填上");
         return false;
       }
       pass = pass.trim();
@@ -629,20 +647,20 @@ Template.create_game.helpers({
   });
 
   Template.join_game.events({
-    'click #back': function () 
+    'click #back': function ()
     {
       leave();
     },
-    'click #submit': function (event) 
+    'click #submit': function (event)
     {
-      
+
       event.preventDefault();
 
       var accessCode = $('#accessCode').val();
       var playerName = $('#name').val();
       var pass = $('#pass').val();
       if (!playerName || !pass) {
-      FlashMessages.sendInfo("Please fill out all fields");
+      FlashMessages.sendInfo("哥。。。快把该填的都填上");
       return false;
     }
 
@@ -660,8 +678,8 @@ Template.create_game.helpers({
       var game = Games.findOne({
         accessCode: accessCode
       });
-     
-      if (game) 
+
+      if (game)
       {
 
         Session.set("isHost", false);
@@ -810,7 +828,7 @@ Template.create_game.helpers({
       });
       return players;
     },
-    accessLink: function () 
+    accessLink: function ()
     {
       return getAccessLink();
     },
@@ -821,11 +839,11 @@ Template.create_game.helpers({
   });
 
 Template.queue_list.events({
-    'click #leave': function () 
+    'click #leave': function ()
     {
       leave();
     },
-    'click .remove': function (event) 
+    'click .remove': function (event)
     {
       if(Session.get('isHost')){
         var player = getCurrentPlayer();
@@ -854,7 +872,7 @@ Template.queue_list.events({
    'change #ins_off' : function(){
       Session.set('want_inspec', false);
    },
-    'click #start-game': function () 
+    'click #start-game': function ()
     {
       var game = getCurrentGame();
       var players = Players.find({'gameID': game._id}, {'sort': {'createdAt': 1}}).fetch();
@@ -1031,7 +1049,7 @@ Template.queue_list.events({
       {
         return game.waiting;
       }
-      
+
     },
 
     //is player is alive function
@@ -1236,15 +1254,15 @@ Template.queue_list.events({
       return game.special;
     }
   });
- 
+
 /*--------------------------Renders---------------------*/
   Template.start_screen.rendered = function(){
   	GAnalytics.pageview("/");
-  }; 
+  };
 
   Template.queue_list.rendered = function(){
     $(document).ready(function(){
-    $('[data-toggle="tooltip"]').tooltip({placement:'right'}); 
+    $('[data-toggle="tooltip"]').tooltip({placement:'right'});
     });
   };
 
@@ -1272,8 +1290,8 @@ Template.queue_list.events({
     setInterval(function(){
       if(shown_tab){
       var divHeight = $('#chat_sms_display').height();
-      var scrollHeight = $('#chat_sms_display').prop('scrollHeight');  
-      var scrolledpx = parseInt($("#chat_sms_display").scrollTop()); 
+      var scrollHeight = $('#chat_sms_display').prop('scrollHeight');
+      var scrolledpx = parseInt($("#chat_sms_display").scrollTop());
       if(($("#chat_sms_display").scrollTop()+divHeight) > (scrollHeight-150)) {
           Session.set("message_check", moment().format());
           updateScroll();
@@ -1314,12 +1332,12 @@ Template.queue_list.events({
     });
 
     $(document).ready(function(){
-      $('[data-toggle="tooltip"]').tooltip({placement:'right'}); 
+      $('[data-toggle="tooltip"]').tooltip({placement:'right'});
     });
   };
 
   Template.game_over.rendered = function(){
-    window.setTimeout(kill_game, 30000);
+    window.setTimeout(kill_game, 60000);
   };
 
   Template.join_game.rendered = function(){
