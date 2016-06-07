@@ -1,0 +1,363 @@
+<head>
+ <meta charset="utf-8">
+ <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1">
+  <title >Mafia</title>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+  <link href='https://fonts.googleapis.com/css?family=Abril+Fatface' rel='stylesheet' type='text/css'>
+</head>
+
+<body>
+	{{> main_menu}}
+</body>
+
+<template name="main_menu">
+<div class="container-fluid">
+	{{> flashMessages}}
+	{{> Template.dynamic template=pageSelect}}
+	</div>
+</template>
+
+<!-- Start Screen -->
+<template name="start_screen">
+	<div class="row">
+ 	   <div class="col-md-3 mobile" style="float:none; margin:auto;">
+ 	    <h1 class="text-center title">Mafia杀人游戏</h1>
+ 	    <hr>
+ 	    <div class="">
+	   	<button id="create_game" class="btn btn-block btn-default">New Game新游戏</button>
+	   	<button id="join_game" class="btn btn-block btn-default">Join Game加入游戏</button>
+	   	</div>
+	   	<hr>
+		</div>
+	</div>
+	{{> footer }}
+</template>
+
+<!-- Create Game -->
+<template name="create_game">
+	<div class="row ">
+ 	   <div class="col-md-3 mobile" style="float:none; margin:auto;">
+	    <h1 class="text-center title">Create Game新建游戏</h1>
+	 	<hr>
+	 	{{#if isLoading}}
+	 	<div class="center block loading"  style="margin-left:auto;">
+	 	<img src="/loading_spinner.gif" style="display: block; margin-left: auto; margin-right: auto; width:150px;height:150px;">
+	 	</div>
+	 	{{else}}
+	 	<div class="center-block mobile">
+	 	<button id="back" class="btn btn-block btn-default">Back返回</button>
+		<button class="btn btn-block btn-default" id="submit">Submit确定</button>
+		</div>
+		{{/if}}
+		<hr>
+		<div class="input-fields">
+		<input type="text" name="name" id="name" class="text form-control" data-toggle="tooltip" title="这个名字只是方便你待会儿可以重新进入游戏" autofocus placeholder="请输入名字" >
+		<br>
+		<input type="password" name="pass" id="pass" class="text form-control" data-toggle="tooltip" title="没有任何要求 不能修改 不要用平时惯用的密码" placeholder="请输入密码" >
+		<hr>
+		</div>
+		</div>
+	</div>
+	{{> footer }}
+</template>
+
+<!-- Join Game -->
+<template name="join_game">
+	<div class="row ">
+ 	   <div class="col-md-3 mobile" style="float:none; margin:auto;">
+ 	    <h1 class="text-center title">Join Game</h1>
+ 	    <hr>
+ 	    {{#if isLoading}}
+	 	<div class="center block mobile loading" style="margin-left:auto;">
+	 	<img src="/loading_spinner.gif" style="display: block; margin-left: auto; margin-right: auto; width:150px;height:150px;">
+	 	</div>
+	 	{{else}}
+ 	    <div class=" center-block ">
+	  		<button id="back" class="btn btn-block btn-default">Back</button>
+	  		<button id="submit" class="btn btn-block btn-default">Join Game</button>
+	  	</div>
+	  	{{/if}}
+	  	<hr>
+	  	<div class="input-fields mobile">
+  		<input type="text" name="accessCode" id="accessCode" class="text access-code form-control" value="{{hasUrlCode}}" autofocus placeholder="Enter Session Code">
+  		<br>
+  		<input type="text" name="name" id="name" class="text form-control" data-toggle="tooltip" autofocus placeholder="Enter Name">
+  		<br>
+		<input type="password" name="pass" id="pass" class="text form-control" data-toggle="tooltip" title="Make a simple password so your friends can't play as you. DISCLAIMER: Don't use your regular password. This isn't fort knox!" placeholder="Enter Password" >
+    	<hr>
+    	</div>
+		</div>
+	</div>
+	{{> footer }}
+</template>
+
+<!-- Queue to wait for players -->
+<template name="queue_list">
+	<div class="row ">
+ 	   <div class="col-md-3 mobile" style="float:none; margin:auto;">
+	 	    <h1 class="text-center title loading">Player List</h1>
+	 	    <hr>
+	 	    {{#if isLoading}}
+			 	<div class="center block mobile">
+	 			<img src="/loading_spinner.gif" style="display: block; margin-left: auto; margin-right: auto; width:150px;height:150px;">
+			 	</div>
+		 	{{else}}
+	 	    <div class="center-block mobile">
+	 	    	{{#if isHost }}
+		 	    	Game Type:
+		 	    	<div class="btn-group btn-group-justified" data-toggle="buttons">
+					  <label class="btn btn-default active">
+					    <input type="radio" name="options" class="global" id="global" autocomplete="off" checked> Global
+					  </label>
+					  <label class="btn btn-default">
+					    <input type="radio" name="options" class="global" id="local" autocomplete="off"> Local
+					  </label>
+					</div>
+					<br>
+					Doctor:
+					<div class="btn-group btn-group-justified" data-toggle="buttons">
+					  <label class="btn btn-default">
+					    <input type="radio" name="options" class="Doctor " id="doc_on" autocomplete="off" > On
+					  </label>
+					  <label class="btn btn-default active" >
+					    <input type="radio" name="options" class="Doctor" id="doc_off" autocomplete="off" > Off
+					  </label>
+					</div>
+					<br>
+					Inspector:
+					<div class="btn-group btn-group-justified" data-toggle="buttons">
+					  <label class="btn btn-default">
+					    <input type="radio" name="options" class="Inspec" id="ins_on" autocomplete="off" > On
+					  </label>
+					  <label class="btn btn-default active">
+					    <input type="radio" name="options" class="Inspec" id="ins_off" autocomplete="off" > Off
+					  </label>
+					</div>
+					<br>
+					{{#if global}}
+					<br>
+					<div class="alert alert-info fade in" >
+						<a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+			    		<strong>Global:</strong><br> Minimum 5 players needed. No Narrator<br>
+			    		<strong><a href="https://en.wikipedia.org/wiki/Mafia_(party_game)#Gameplay" target="_blank">How To Play</a></strong>
+			    	</div>
+			    	{{else}}
+			    	<br>
+			    	<div class="alert alert-info fade in" >
+			    		<a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+			    		<strong>Local:</strong><br>Minimum 6 players needed. One player will be the narrator
+			    		<br>
+			    		Select this option if you are all in the same room.
+			    		<br>
+			    		<strong><a href="https://en.wikipedia.org/wiki/Mafia_(party_game)" target="_blank">How To Play</a></strong>
+			    	</div>
+			    	{{/if}}
+	 	    	{{ /if}}
+	 	    	{{#if isHost }} <button id="start-game" class="btn btn-block btn-default" {{minPlayer}}>Start Game</button>{{ /if}}
+	    	  	<button id="leave" class="btn btn-block btn-default">Leave</button>
+	    	</div>
+	    	{{/if}}
+	    	<hr>
+	    		{{#if isHost }}
+		    	<div class="access">
+		    	<div class="alert alert-warning">
+		    	Give other players the code below, or copy the URL link for easier access.
+		    	</div>
+		    	<h3> Game Code: </h3><input type="text" value="{{ accessLink }}" readonly onClick="this.setSelectionRange(0, this.value.length)"/>
+		    	<h3> URL</h3><input  type="text" class="form-control url" value="{{ urlCode }}" readonly onClick="this.setSelectionRange(0, this.value.length)"/>
+		    	</div>
+	    	<hr>
+	    	{{else}}
+	    		<div class="alert alert-info">
+		    	Waiting for host to start...
+		    	<br>
+		    	<strong><a href="https://en.wikipedia.org/wiki/Mafia_(party_game)#Gameplay" target="_blank">How To Play</a></strong>
+		    	</div>
+	    	{{/if}}
+
+
+	    	<div class="queue">
+
+			<div class="list-group list-inline">
+		      {{#each players }}
+		      <a class="list-group-item">
+		      {{#if isHost }}<span class="badge"><i class="glyphicon glyphicon-remove remove" id="{{ _id }}"></i></span>{{/if}}
+		        {{ name }}
+		      </a>
+		    {{/each}}
+	    	</div>
+	    	</div>
+		</div>
+	</div>
+</template>
+
+<!-- Day -->
+<template name="day">
+	<div class="row ">
+		<!-- Briefing-->
+ 	   <div class="col-md-3" style="float:none; margin:auto;">
+ 	   <div class="row-head">
+ 	   <div class="title-text">
+ 	   {{#if enabled}}
+	    <h1 class="text-center title">{{time}}</h1>
+	    <div class="text-center">{{#if isAlive}}Waiting for {{waiting}}{{else}}You are dead.{{/if}}</div>
+	    {{else}}
+	    <h1 class="text-center title">Local Game</h1>
+	    {{/if}}
+        <hr>
+        </div>
+        <div class="tabMenu">
+        	<ul class="nav nav-tabs">
+       		 <li><a data-toggle="tab" update-time="down" href="#briefing">Briefing </a></li>
+       		 {{#if access}}
+       		 {{#if enabled}}
+	    	 <li><a data-toggle="tab" update-time="down" href="#players">Voting </a></li>
+	    	 <li><a data-toggle="tab" update-time="up" href="#chat">Chat {{#if messageNotification }}<i class="glyphicon glyphicon-asterisk"></i> {{/if}}</a></li>
+	    	 {{/if}}
+	    	 {{/if}}
+	    	 </ul>
+		</div>
+		</div>
+		<div class="tab-content">
+			<div id="briefing" class="tab-pane fade access active">
+		       	<h3 class="center">{{ myName }}</h3>
+		       	<br>
+		       	<h4 class="center">Current Role:{{#if isAlive}} {{else}} Dead {{/if}} {{role}}</h4>
+		       	<br>
+		       	<h5 class="center">{{roleDescription}}</h5>
+		       	<hr>
+		       	{{#if enabled}}
+				<div class="center">{{time}}</div>
+				<div class="text-center">{{#if isAlive}}Waiting for {{waiting}}{{else}}You are dead.{{/if}}</div>
+				{{/if}}
+				<br>
+		        {{#if isMafia}}
+		        <div class="center">
+			        All Mafioso:
+			        {{#each otherMafia}}
+			        <br>
+			        {{ name }}
+			        {{/each}}
+		        </div>
+		        {{/if}}
+		        <hr>
+		        <div class="totals">
+		        	<div class="list-group list-inline">
+				      <a class="list-group-item">
+				        Mafioso: <br>{{ mafioso }}
+				      </a>
+				      <a class="list-group-item">
+				        Civilians: <br>{{ civilians }}
+				      </a>
+				       <a class="list-group-item">
+				        Doctor: {{#if doctor }}<i class="glyphicon glyphicon-ok"></i>{{else}}<i class="glyphicon glyphicon-remove"></i>{{/if}}<br>
+				        Inspector: {{#if inspector }}<i class="glyphicon glyphicon-ok"></i>{{else}}<i class="glyphicon glyphicon-remove"></i>{{/if}}
+				      </a>
+			    	</div>
+		        </div>
+		       	<hr>
+		       	{{#if global}}
+		       	 {{#each news }}
+		       	 <h4 class="headline">
+			      	{{ name }} | {{ summary }}
+			      	</h4>
+			      	<div class="article">
+			      	{{ reason }}
+			      	</div>
+			      	<hr>
+			    {{/each}}
+			    {{/if}}
+		    </div>
+
+			<!-- Voting -->
+			{{#if access}}
+			<div id="players" class="tab-pane fade">
+			<!--<a href="#" data-toggle="tooltip" title="Select person you might suspect is a mafioso. 50% or higher votes needed">Help?</a>-->
+				 {{#each players }}
+				 <div class="input-group">
+			      <button id="{{_id}}" class="vote btn {{#if alive}}btn-info{{else}}btn-danger{{/if}} form-control" >
+			      	{{ name }} | {{votes}}
+			      </button>
+			      <span class="input-group-btn">
+			      	<button  id="{{_id}}" class="whoVoted btn btn-default" type="button" data-toggle="dropdown"><i id="{{_id}}" class="glyphicon glyphicon-info-sign"></i>
+			      	</button>
+			      	<ul class="dropdown-menu dropdown-menu-right">
+			      	{{#each check_votes}}
+					    <li><a href="#">{{name}}</a></li>
+					    {{/each}}
+					  </ul>
+			      </span>
+			     </div>
+			      <br>
+			    {{/each}}
+			</div>
+			{{/if}}
+
+			<!-- Chat-->
+			{{#if enabled}}
+				<div id="chat" class="tab-pane fade chat-row">
+				<!--<a href="#" data-toggle="tooltip" title="You're dead, dead people don't talk.">Cant type?</a>-->
+					<div id="chat_sms_display" class="chat_sms_display">
+					{{#if access}}
+					    {{#each chat}}
+						    <div class="message_row">
+						        <div class="user_name">
+							    	{{ username }}
+							    </div>
+							    <div class="sms {{ colour }}">
+							    	<img src="/{{ colour }}.png">{{text}}
+						    	</div>
+							</div>
+					    {{/each}}
+					{{/if}}
+						</div>
+						{{#if access}}
+						{{#if isAlive}}
+						<form class="new-message">
+						<div class="input-group">
+					        <input type="text" name="text" class="form-control" onfocus="{{updateScroll}}" placeholder="Send Message" />
+					        <span class="input-group-btn">
+							    <button class="btn btn-primary" type="submit" value="submit"><i class="glyphicon glyphicon-upload"> </i></button>
+							</span>
+						</div>
+					    </form>
+					    {{/if}}
+					    {{/if}}
+					</div>
+				{{/if}}
+			</div>
+		</div>
+	</div>
+</template>
+
+<!-- Game Over -->
+<template name="game_over">
+	<div class="row">
+	<div class="col-md-3" style="float:none; margin:auto;">
+		<h1 class="text-center title whiteText">{{ winner }} Wins</h1>
+		<hr>
+		<div class="players">
+		<div>
+		{{ special }}
+		</div>
+		{{#each players}}
+		<div  class="alert {{#if isMa isMafia}}alert-warning{{else}}alert-success{{/if}} fade in">
+			 <strong>{{ name }}</strong><br> {{ role }} | {{#if isAlive alive}}Alive{{else}}Dead{{/if}}
+	    </div>
+		{{/each}}
+		</div>
+	</div>
+	</div>
+</template>
+
+<!-- Footers -->
+<template name="footer">
+	<div class="col-md-3" style="float:none; margin:auto;">
+	<div class="footer center-footer">
+    千万不要对外公开。。服务器会被搞死。。而且数据上没有做任何安全措施<br>
+
+    Developed by <a href="https://www.jie211.me"  target="_blank">jie211</a>
+	</div>
+	</div>
+</template>
