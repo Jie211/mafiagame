@@ -101,11 +101,11 @@ function generateNewGame(game, name) {
         accessCode: createSessionID(),
         createdAt: moment().toDate().getTime(), //moment library for date
         state: "waitingForPlayers",
-        gameTime: "Day", //memo maybe change to nighttime
+        gameTime: "Night", //memo maybe change to nighttime
         global: true, //variable for local game or global
         special: null, //This is the end game message
         winner: null, //Who the winner is
-        waiting: 'Players', //Display who we're waiting on
+        waiting: 'Mafia', //Display who we're waiting on
         day: 1 // Length of Game
     };
     var gameID = Games.insert(game); //insert game to Collection
@@ -1006,19 +1006,9 @@ Template.queue_list.events({
     },
     'click #start-game': function() {
         var game = getCurrentGame();
-        var players = Players.find({
-            'gameID': game._id
-        }, {
-            'sort': {
-                'createdAt': 1
-            }
-        }).fetch();
+        var players = Players.find({'gameID': game._id}, {'sort': {'createdAt': 1}}).fetch();
         assignRoles(players);
-        Games.update(game._id, {
-            $set: {
-                state: 'day'
-            }
-        });
+        Games.update(game._id, {$set: {state: 'night'}});
     },
 });
 
