@@ -100,15 +100,23 @@ function getVotedPlayer(id)
 }
 function generateNewGame(game, name)
 {
+  var todo='';
+  if(Session.get('want_doctor')){
+    todo='Doctor';
+  }else if(Session.get('want_inspec')){
+    todo='Inspector';
+  }else{
+    todo='Mafia';
+  }
   var game = {
     accessCode: createSessionID(),
     createdAt: moment().toDate().getTime(),//moment library for date
     state: "waitingForPlayers",
-    gameTime: "Day",//memo maybe change to nighttime //todo
+    gameTime: "Night",//memo maybe change to nighttime //todo
     global: true,//variable for local game or global
     special: null, //This is the end game message
     winner: null, //Who the winner is
-    waiting: "Players", //Display who we're waiting on
+    waiting: todo, //Display who we're waiting on
     day: 1 // Length of Game
   };
   var gameID = Games.insert(game);//insert game to Collection
@@ -202,11 +210,11 @@ function checkVotes(day)
           //may be remove this later
           var isInspectorStillAlive = Players.find({'gameID': game._id,  'alive': true, 'role': 'inspector'},{}).fetch();
           var isDoctorStillAlive = Players.find({'gameID': game._id,  'alive': true, 'role': 'doctor'},{}).fetch();
-          if (isInspectorStillAlive.length == 1 && isDoctorStillAlive.length == 1)
+          if (isInspectorStillAlive.length >= 1 && isDoctorStillAlive.length == 1)
           {
             Games.update(game._id, {$set: {waiting: "Inspector",state: 'inspection'}});
           }
-          else if (isInspectorStillAlive.length == 1 && isDoctorStillAlive.length == 0)
+          else if (isInspectorStillAlive.length >= 1 && isDoctorStillAlive.length == 0)
           {
             Games.update(game._id, {$set: {waiting: "Inspector",state: 'inspection'}});
           }
@@ -515,7 +523,7 @@ function assignRoles(players)
   if(Session.get('want_inspec'))
   {
   	GAnalytics.event("game-events", "hasinspector");
-    var totalInspector = 1;
+    var totalInspector = totalMafia;
   }
   else
   {
@@ -683,7 +691,7 @@ Template.create_game.helpers({
         Session.set("message_check", moment().format());
         Session.set("playerID", player._id);
         Session.set('want_doctor', false);
-        Session.set('want_inspec', false);
+        Session.set('want_inspec', true);
         Session.set("playerName",player.name);
         Session.set("template_select", "queue_list");
     });
@@ -840,7 +848,7 @@ Template.create_game.helpers({
       var players = Players.find({'gameID': game._id}, {}).fetch();
       if(game.global)
       {
-        if(players.length >= 5)
+        if(players.length >= 6)
         {
           return "enabled";
         }
@@ -851,7 +859,7 @@ Template.create_game.helpers({
       }
       else
       {
-          if(players.length >= 6)
+          if(players.length >= 7)
         {
           return "enabled";
         }
@@ -991,7 +999,14 @@ Template.queue_list.events({
       var player = getCurrentPlayer();
       return player.isMafia;
     },
-
+    isInspector: function(){
+      var player = getCurrentPlayer();
+      if(player.role == 'inspector'){
+        return true;
+      }else{
+        return false;
+      }
+    },
     //update chat scroll
     updateScroll: function(){
         updateScroll();
@@ -1102,6 +1117,10 @@ Template.queue_list.events({
       var players = Players.find({'gameID': Session.get("gameID"),'isMafia':true}, {}).fetch();
       return players;
     },
+    otherInspector: function(){
+      var players = Players.find({'gameID': Session.get("gameID"),'role':'inspector'}, {}).fetch();
+      return players;
+    },
 
     //Who players are waiting for
     waiting: function(){
@@ -1160,7 +1179,7 @@ Template.queue_list.events({
       var inspect = Players.find({'gameID': Session.get("gameID"),'role':'inspector'}, {}).fetch();
       if(inspect.length > 0)
       {
-        return true;
+        return inspect.length;
       }
       else
       {

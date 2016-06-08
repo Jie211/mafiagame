@@ -115,38 +115,48 @@
 					  </label>
 					</div>
 					<br>
-					医生:
-					<div class="btn-group btn-group-justified" data-toggle="buttons">
-					  <label class="btn btn-default">
-					    <input type="radio" name="options" class="Doctor " id="doc_on" autocomplete="off" > 开
-					  </label>
-					  <label class="btn btn-default active" >
-					    <input type="radio" name="options" class="Doctor" id="doc_off" autocomplete="off" > 关
-					  </label>
-					</div>
-					<br>
 					警察:
 					<div class="btn-group btn-group-justified" data-toggle="buttons">
-					  <label class="btn btn-default">
+					  <label class="btn btn-default active">
 					    <input type="radio" name="options" class="Inspec" id="ins_on" autocomplete="off" > 开
 					  </label>
-					  <label class="btn btn-default active">
+					  <label class="btn btn-default">
 					    <input type="radio" name="options" class="Inspec" id="ins_off" autocomplete="off" > 关
 					  </label>
 					</div>
 					<br>
+          医生:
+          <div class="btn-group btn-group-justified" data-toggle="buttons">
+            <label class="btn btn-default ">
+              <input type="radio" name="options" class="Doctor" id="doc_on" autocomplete="off" > 开
+            </label>
+            <label class="btn btn-default active" >
+              <input type="radio" name="options" class="Doctor" id="doc_off" autocomplete="off" > 关
+            </label>
+          </div>
+          <br>
+          狙击手:
+          <div class="btn-group btn-group-justified" data-toggle="buttons">
+            <label class="btn btn-default ">
+              <input type="radio" name="options" class="Sniper" id="snip_on" autocomplete="off" > 开
+            </label>
+            <label class="btn btn-default active" >
+              <input type="radio" name="options" class="Sniper" id="snip_off" autocomplete="off" > 关
+            </label>
+          </div>
+          <br>
 					{{#if global}}
 					<br>
 					<div class="alert alert-info fade in" >
 						<a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
-			    		<strong>自动:</strong><br> 最少需要5名玩家，不需要裁判<br>
+			    		<strong>自动:</strong><br> 最少需要6名玩家，不需要裁判<br>
 			    		<strong><a href="https://en.wikipedia.org/wiki/Mafia_(party_game)#Gameplay" target="_blank">不知道怎么玩的话 怒点我查看WikiPedia</a></strong>
 			    	</div>
 			    	{{else}}
 			    	<br>
 			    	<div class="alert alert-info fade in" >
 			    		<a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
-			    		<strong>手动:</strong><br>最少需要6名玩家，需要一个苦逼当裁判
+			    		<strong>手动:</strong><br>最少需要7名玩家，需要一个苦逼当裁判
 			    		<br>
 			    		当然你们需要在同一个房间内才能玩
 			    		<br>
@@ -243,6 +253,15 @@
 			        {{/each}}
 		        </div>
 		        {{/if}}
+            {{#if isInspector}}
+		        <div class="center">
+			        全部的警察:
+			        {{#each otherInspector}}
+			        <br>
+			        {{ name }}
+			        {{/each}}
+		        </div>
+		        {{/if}}
 		        <hr>
 		        <div class="totals">
 		        	<div class="list-group list-inline">
@@ -252,9 +271,11 @@
 				      <a class="list-group-item">
 				        平民人数: <br>{{ civilians }}
 				      </a>
+              <a class="list-group-item">
+				        警察人数: {{#if inspector }}<br>{{inspector}}{{else}}<i class="glyphicon glyphicon-remove"></i>{{/if}}
+				      </a>
 				       <a class="list-group-item">
 				        医生人数: {{#if doctor }}<i class="glyphicon glyphicon-ok"></i>{{else}}<i class="glyphicon glyphicon-remove"></i>{{/if}}<br>
-				        警察人数: {{#if inspector }}<i class="glyphicon glyphicon-ok"></i>{{else}}<i class="glyphicon glyphicon-remove"></i>{{/if}}
 				      </a>
 			    	</div>
 		        </div>
