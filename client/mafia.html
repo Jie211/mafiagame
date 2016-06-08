@@ -115,7 +115,7 @@
 					  </label>
 					</div>
 					<br>
-					医生或者护士（你懂的）:
+					医生:
 					<div class="btn-group btn-group-justified" data-toggle="buttons">
 					  <label class="btn btn-default">
 					    <input type="radio" name="options" class="Doctor " id="doc_on" autocomplete="off" > 开
@@ -125,7 +125,7 @@
 					  </label>
 					</div>
 					<br>
-					狙击手:
+					警察:
 					<div class="btn-group btn-group-justified" data-toggle="buttons">
 					  <label class="btn btn-default">
 					    <input type="radio" name="options" class="Inspec" id="ins_on" autocomplete="off" > 开
@@ -225,7 +225,7 @@
 			<div id="briefing" class="tab-pane fade access active">
 		       	<h3 class="center">{{ myName }}</h3>
 		       	<br>
-		       	<h4 class="center">你的身份:{{#if isAlive}} {{else}} 已经挂了 {{/if}} {{role}}</h4>
+		       	<h4 class="center">你的身份:{{#if isAlive}} {{else}} 已经挂了的{{/if}} {{role}}</h4>
 		       	<br>
 		       	<h5 class="center">{{roleDescription}}</h5>
 		       	<hr>
@@ -254,7 +254,7 @@
 				      </a>
 				       <a class="list-group-item">
 				        医生人数: {{#if doctor }}<i class="glyphicon glyphicon-ok"></i>{{else}}<i class="glyphicon glyphicon-remove"></i>{{/if}}<br>
-				        狙击手人数: {{#if inspector }}<i class="glyphicon glyphicon-ok"></i>{{else}}<i class="glyphicon glyphicon-remove"></i>{{/if}}
+				        警察人数: {{#if inspector }}<i class="glyphicon glyphicon-ok"></i>{{else}}<i class="glyphicon glyphicon-remove"></i>{{/if}}
 				      </a>
 			    	</div>
 		        </div>
@@ -337,7 +337,7 @@
 <template name="game_over">
 	<div class="row">
 	<div class="col-md-3" style="float:none; margin:auto;">
-		<h1 class="text-center title whiteText">{{ winner }} Wins</h1>
+		<h1 class="text-center title whiteText">{{ winner }} 获胜</h1>
 		<hr>
 		<div class="players">
 		<div>

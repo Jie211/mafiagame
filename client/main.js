@@ -104,7 +104,7 @@ function generateNewGame(game, name)
     accessCode: createSessionID(),
     createdAt: moment().toDate().getTime(),//moment library for date
     state: "waitingForPlayers",
-    gameTime: "Day",//memo maybe change to nighttime
+    gameTime: "Day",//memo maybe change to nighttime //todo
     global: true,//variable for local game or global
     special: null, //This is the end game message
     winner: null, //Who the winner is
@@ -176,17 +176,17 @@ function checkVotes(day)
         if(totalMafia.length === 0)
         {
             GAnalytics.event("game-events", "civilianswin-day-gameend");
-            Games.update(game._id, {$set: {winner: "Civilians",special: "No Mafia remain in the town.",state: 'game_over'}});
+            Games.update(game._id, {$set: {winner: "Civilians",special: "杀手全部被处刑。",state: 'game_over'}});
         }
         else if(totalOther.length === 0)
         {
         	GAnalytics.event("game-events", "mafiawin-day-gameend");
-            Games.update(game._id, {$set: {winner: "The Mafia",special: "The Mafia were the last ones standing.",state: 'game_over'}});
+            Games.update(game._id, {$set: {winner: "The Mafia",special: "杀手笑到了最后。",state: 'game_over'}});
         }
         else if(totalMafia.length === totalOther.length)
         {
         	GAnalytics.event("game-events", "mafiawin-day-gameend");
-            Games.update(game._id, {$set: {winner: "The Mafia",special: "The Mafioso were equal to the Civilians, Mafia win.",state: 'game_over'}});
+            Games.update(game._id, {$set: {winner: "The Mafia",special: "杀手和群众人数一样，杀手获胜。",state: 'game_over'}});
         }
         else
         {//if game is still runing -> turn gametime to night
@@ -244,17 +244,17 @@ function checkVotes(day)
           if(totalMafia.length === 0)
           {
           	GAnalytics.event("game-events", "civilianswin-night-gameend");
-            Games.update(game._id, {$set: {winner: "Civilians",special: "No Mafia remain in the town.",state: 'game_over'}});
+            Games.update(game._id, {$set: {winner: "Civilians",special: "杀手已经全部被处死。",state: 'game_over'}});
           }
           else if(totalOther.length === 0)
           {
           	GAnalytics.event("game-events", "mafiawin-night-gameend");
-            Games.update(game._id, {$set: {winner: "The Mafia",special: "The Mafia were the last ones standing.",state: 'game_over'}});
+            Games.update(game._id, {$set: {winner: "The Mafia",special: "杀手笑到了最后",state: 'game_over'}});
           }
           else if(totalMafia.length === totalOther.length)
           {
           	GAnalytics.event("game-events", "mafiawin-night-gameend");
-            Games.update(game._id, {$set: {winner: "The Mafia",special: "The Mafioso were equal to the Civilians, Mafia win.",state: 'game_over'}});
+            Games.update(game._id, {$set: {winner: "The Mafia",special: "杀手和群众人数一样，杀手获胜。",state: 'game_over'}});
           }
           else
           {
@@ -286,25 +286,25 @@ function shuffleArray(array)
 
 function deaths()
 {
-  var deaths = ['被人扔进水里，不会游泳淹死',
-  '被人问到年龄的时候装嫩，被打死',
-  '被人用割喉',
-  '被人用砖块砸死',
-  '被强行塞入20个狗不理包子噎死',
-  '被人用三轮车撞死',
-  '被人塞到马桶里溺死',
-  '被人关起来饿死',
-  '被送进传销组织，逃出来的时候被传销人打死',
-  '被关进基佬监狱，洗澡的时候不小心肥皂掉了。。。卒',
-  '被扔进洗衣机绞死',
-  '',
-  '',
-  '',
-  '',
-  '',
-  '',
-  '',
-  ''
+  var deaths = ['扔进水里，但是不会游泳，淹死',
+  '打死',
+  '割喉而死',
+  '用砖块砸死',
+  '强行塞20个狗不理包子噎死',
+  '用三轮车撞死',
+  '塞到马桶里溺死',
+  '关起来饿死',
+  '送进传销组织，企图逃出来的时候被打死',
+  '关进基佬监狱，洗澡的时候不小心肥皂掉了。。。',
+  '扔进洗衣机转死',
+  '辱骂而亡',
+  '用钢琴砸死',
+  '陷害，被愤怒TFBoy粉丝打死',
+  '一记螺旋丸击中，卒',
+  '一记千鸟击中，卒',
+  '一记庐山升龙霸击中，卒',
+  '一记狼牙风风拳击中，卒',
+  '一记元气弹击中，卒'
 ];
   var item = deaths[Math.floor(Math.random()*deaths.length)];
   return item;
@@ -312,41 +312,97 @@ function deaths()
 
 function noun()
 {
-  var who = ['an angry mob',
-  'break dancers',
-  'Aunt Jemima',
-  'Donald Trump',
-  'Peter Pan',
-  'disgruntled mimes',
-  'a rooster'];
+  var who = ['吃香蕉的',
+  '跳街舞的',
+  '吃麻辣烫的，',
+  '大保健的，',
+  '上厕所的，',
+  '抠鼻屎的，',
+  '打羽毛球的，',
+  '看龙珠的',
+  '看火影的',
+  '蹲下系鞋带的',
+  '玩手机的',
+  '看AV的',
+  '打麻将的',
+  '刷牙的'
+];
   var item = who[Math.floor(Math.random()*who.length)];
+  return item;
+}
+
+function whois()
+{
+  var sowhois = ['雅木茶',
+  '佟掌柜',
+  '舒克',
+  '兔八哥',
+  '岳云鹏',
+  '绿巨人',
+  '雅典娜',
+  '伊利丹',
+  '仙道',
+  '二当家',
+  '杨二车纳姆',
+  '法海',
+  '大蛇丸',
+  '阿努比斯'
+];
+  var item = sowhois[Math.floor(Math.random()*sowhois.length)];
   return item;
 }
 
 function locations()
 {
-  var locations = ['at the park',
-  'on a boat',
-  'at a party',
-  'at home',
-  'in their treehouse',
-  'at starbucks',
-  'at the library',
-  'at a water park'];
+  var locations = ['厕所',
+  '广场上',
+  'KTV包间',
+  '家',
+  '地铁上',
+  '星巴克',
+  '女厕所',
+  '男厕所',
+  '朝鲜境内',
+  '迪斯尼乐园',
+  '乞力马扎罗山上',
+  '马里亚纳海沟',
+  '撒哈拉',
+  '血色修道院',
+  '外域',
+  '卡拉赞',
+  '太阳之井',
+  '终结之谷',
+  '疯人院',
+  '阿兹卡班',
+  '木叶',
+  '南斯拉夫'
+];
   var item = locations[Math.floor(Math.random()*locations.length)];
   return item;
 }
 
 function verbs()
 {
-  var verb = ['skipping rocks',
-  'eating',
-  'drinking coffee',
-  'watching netflix',
-  'sleeping',
-  'roasting mashmellow',
-  'kissing frogs hoping to find their prince',
-  'swimming with sharks'];
+  var verb = ['抽烟',
+  '吃饭',
+  '喝咖啡',
+  '看康熙来了',
+  '睡觉',
+  '摘蘑菇',
+  '拿着水晶鞋寻找灰姑娘',
+  '逃离FBI追捕',
+  '看故事会',
+  '玩马里奥卡丁车',
+  '寻找法老的宝藏',
+  '和赵灵儿去南诏国',
+  '躲在石头后面偷看赵灵儿洗澡',
+  '召唤九尾',
+  '封印大蛇丸',
+  '哭着对安西教练说［我想打篮球］',
+  '集查克拉',
+  '在等待CD时间',
+  '在施法变羊术'
+];
   var item = verb[Math.floor(Math.random()*verb.length)];
   return item;
 }
@@ -354,24 +410,25 @@ function verbs()
 function mafiaNews(playerName, healed)
 {
   var death = deaths();
-  var who = noun();
+  var who = whois();
+  var doing = noun();
   var location = locations();
   var verb = verbs();
   var game = getCurrentGame();
   if(!healed)
   {
-    var reason = "Last night " + playerName + " was " + verb + " " + location + " unfortunaly they " + death + " by " + who + ".";
+    var reason = "昨晚 " + playerName + " 在 " + location + " " + verb +" 的时候 " + " 非常不幸的，" + "被在 " + doing + " " + who + " " + death + "。";
   }
   else
   {
-    var reason = "Last night " + playerName + " was " + verb + " " + location + " unfortunaly they " + death + " by " + who + "." + "Luckily a well trained doctor was around. So yeah, they didn't die. The plot Thickens...";
+    var reason = "昨晚 " + playerName + " 在 " + location + " " + verb +" 的时候 " + " 非常不幸的，" + "被在 " + doing + " " + who + " " + death + ", " + "但是在关键时刻，一道圣光，TA居然被复活了。";
   }
   Meteor.subscribe('news',game._id);
   if(game.global)
   {
     News.insert({
         name: playerName,
-        summary: "killed",
+        summary: "被杀",
         reason: reason,
         createdAt: moment().format(), // current time
         game: Session.get("gameID"), //get gameID for chat reference
@@ -382,15 +439,15 @@ function mafiaNews(playerName, healed)
     var reason = "";
     if(healed)
     {
-      reason = playerName + " was targeted by the mafia but the doctor saved them. Think of a fun story."
+      reason = playerName + " 被杀手盯上了，但是医生救了TA。然后自己编个故事吧。。。"
     }
     else
     {
-      reason = playerName + " was killed by the mafia. Think of a fun story."
+      reason = playerName + " 被杀手爆头了。然后自己编个故事吧。。。"
     }
     News.insert({
         name: playerName,
-        summary: "killed",
+        summary: "被杀",
         reason: reason,
         createdAt: moment().format(), // current time
         game: Session.get("gameID"), //get gameID for chat reference
@@ -406,8 +463,8 @@ function communityNews(playerName)
   {
     News.insert({
         name: playerName,
-        summary: "Voted",
-        reason: "The town was unanimous " + playerName + " has left town.",
+        summary: "被投死",
+        reason: "不明真相的 " + playerName + " 被绞死了。",
         createdAt: moment().format(), // current time
         game: Session.get("gameID"), //get gameID for chat reference
         });
@@ -416,8 +473,8 @@ function communityNews(playerName)
   {
      News.insert({
       name: playerName,
-      summary: "Voted",
-      reason: playerName + " is out.",
+      summary: "被投死",
+      reason: playerName + " 被投死了。",
       createdAt: moment().format(), // current time
       game: Session.get("gameID"), //get gameID for chat reference
       });
@@ -692,13 +749,13 @@ Template.create_game.helpers({
 
           var checkForSameName = Players.find({'gameID': game._id, 'name': playerName}).fetch();
           if(checkForSameName.length > 0){
-            FlashMessages.sendError("That name is already taken.");
+            FlashMessages.sendError("换一个名字呗，这名字已经被用了");
             GAnalytics.event("game-events", "invalid-nametaken-joingame");
             return;
           }
           var playerLimit = Players.find({'gameID': game._id}).fetch();
           if(playerLimit.length >= 20){
-            FlashMessages.sendError("Game is full");
+            FlashMessages.sendError("下次早点来，房间装不下了");
             GAnalytics.event("game-events", "invalid-gamefull-joingame");
             return;
           }
@@ -735,7 +792,7 @@ Template.create_game.helpers({
 	            else
 	            {
 	            	GAnalytics.event("game-events", "invalid-rejoin-joingame");
-	                FlashMessages.sendError("No player found with that information");
+	                FlashMessages.sendError("大哥，要不是你打错字了，否则就是游戏已经开始所以进不去了");
 	                Session.set("loading", false);
 	            }
           });
@@ -885,13 +942,34 @@ Template.queue_list.events({
   Template.day.helpers({
     time: function(){
       var game = getCurrentGame();
-      var dayString = game.gameTime + " " + game.day.toString();
+      var t = '';
+      if(game.gameTime == 'Day'){
+        t='个白天';
+      }else if(game.gameTime == 'Night'){
+        t='个晚上';
+      }else{
+        t='!BUG!';
+      }
+      var dayString = "第 " + game.day.toString() + " " + t;
+
       return dayString;
     },
     //briefing
     role: function(){
       var role = getCurrentPlayer();
-      return role.role;
+      var rt="";
+      if(role.role == 'civilian'){
+        rt='无辜群众';
+      }else if(role.role == 'mafioso'){
+        rt='杀手';
+      }else if(role.role == 'narrator'){
+        rt='主持';
+      }else if(role.role == 'inspector'){
+        rt='警察';
+      }else if(role.role == 'doctor'){
+        rt='医生'
+      }
+      return rt;
     },
     check_votes: function(){
     	var checkvote = Session.get('check_votes');
@@ -924,23 +1002,23 @@ Template.queue_list.events({
       var player = getCurrentPlayer();
       if(player.role === 'mafioso')
       {
-        return "During the day you must blend in with the rest and avoid being voted out. During the night, all Mafioso must decide together who to off.";
+        return "白天你要尽可能不要被投票投出去。到了晚上，你的目标是和别的杀手一起把其他人都杀掉。";
       }
       else if(player.role === 'civilian')
       {
-        return "During the day all civilians must decide to vote someone out. You will need more than half of everyones votes. Good luck.";
+        return "白天你要和别的不明真相的群众想办法把有杀手嫌疑的人投出去，你们需要过半的选票。到了晚上，你就只有祈祷不被杀掉了。";
       }
       else if(player.role === 'narrator')
       {
-        return "It is your job to dictate the game.";
+        return "你负责引导整体游戏流程。";
       }
       else if(player.role === 'inspector')
       {
-        return "During the night you have the opportunity to investigate another player's role. Choose carefully.";
+        return "晚上你可以鉴别一个角色是不是杀手。";
       }
       else if(player.role === 'doctor')
       {
-        return "During the night you have the opportunity to save one player. Including yourself."
+        return "晚上你可以拯救一个角色，让他免于杀手的毒手，当然包括你自己。"
       }
     },
     //if there is a narrator
@@ -1031,23 +1109,33 @@ Template.queue_list.events({
       var player = getCurrentPlayer();
       if(game.waiting == 'Mafia' && player.isMafia == true)
       {
-        return "you!";
+        return "你！";
       }
       else if (game.waiting == 'Doctor' && player.role == 'doctor')
       {
-        return "you!";
+        return "你！";
       }
       else if (game.waiting == "Inspector" && player.role == 'inspector')
       {
-        return "you!";
+        return "你！";
       }
       else if (game.waiting == "Players")
       {
-        return "everyone. Time to vote.";
+        return "所有人，现在是投票时间！";
       }
       else
       {
-        return game.waiting;
+        var char = "";
+        if(game.waiting == 'Mafia'){
+          char = "杀手";
+        }else if(game.waiting == 'Doctor'){
+          char = "医生";
+        }else if(game.waiting == 'Inspector'){
+          char = "警察";
+        }else{
+          char = "!BUG!";
+        }
+        return char;
       }
 
     },
@@ -1130,7 +1218,7 @@ Template.queue_list.events({
       //day and night votes
       if(game.state == "day" || game.state == "night")
       {
-        if(myVote == player._id || player.alive == false || player.role == "narrator" || player.voteCast === myVote || votedPlayer.alive == false || votedPlayer.role == "narrator")
+        if(player.alive == false || player.role == "narrator" || player.voteCast === myVote || votedPlayer.alive == false || votedPlayer.role == "narrator")
         {
           // don't vote for yourself dummy
         }
@@ -1165,7 +1253,13 @@ Template.queue_list.events({
         }
         else
         {
-          alert(votedPlayer.name + " | " + votedPlayer.role);
+          var r = '';
+          if(votedPlayer.role == 'mafioso'){
+            r = '确实是杀手';
+          }else{
+            r = '不是杀手';
+          }
+          alert(votedPlayer.name + " | " + r);
           var isDoctorAlive = Players.find({'gameID': game._id,  'alive': true, 'role': 'doctor'},{}).fetch();
           if(isDoctorAlive.length == 0)
           {
@@ -1180,13 +1274,13 @@ Template.queue_list.events({
 
       else if(game.state == "medic")
       {
-        if(myVote == player._id || player.alive == false || player.voteCast === myVote || votedPlayer.alive == false || votedPlayer.role == "narrator")
+        if(player.alive == false || player.voteCast === myVote || votedPlayer.alive == false || votedPlayer.role == "narrator")
         {
           // don't vote for yourself dummy
         }
         else
         {
-          alert(votedPlayer.name + " is protected");
+          alert("保护了" + votedPlayer.name);
           Players.update(votedPlayer._id, {$set: {healed: true}});
           Games.update(game._id, {$set: {waiting: "Mafia",state: 'night'}});
         }
@@ -1227,7 +1321,15 @@ Template.queue_list.events({
     },
     winner: function(){
       var winner = getCurrentGame();
-      return winner.winner;
+      var rt = "";
+      if(winner.winner == 'The Mafia'){
+        rt = '杀手们';
+      }else if(winner.winner == 'Civilians'){
+        rt = '群众们';
+      }else{
+        rt = '!BUG!';
+      }
+      return rt;
     },
     isMa:function(mafia){
       if(mafia)
