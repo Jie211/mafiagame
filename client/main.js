@@ -156,6 +156,12 @@ function checkVotes(day) {
         'isNarrator': false
     }, {}).fetch();
 
+    var medicDeathPlayer = Players.find({
+        'gameID': game._id,
+        'alive': false,
+        'injections': 2
+    }, {}).fetch();
+
     var totalMafia = Players.find({
         'gameID': game._id,
         'isMafia': true,
@@ -178,7 +184,7 @@ function checkVotes(day) {
     if (day == 'medic'){
      if(player.healed == true){
        if(player.injections > 1){
-         mafiaNews(player.name, false);
+        //  mafiaNews(player.name, false);
          Players.update(player._id, {
              $set: {
                  healed: false,
@@ -378,11 +384,12 @@ function checkVotes(day) {
         });
     }else {
         if (player.votes == totalMafia.length) {
-            if (player.healed == false) {
+            if (player.healed == false || player.injections == 2) {
                 mafiaNews(player.name, false);
                 Players.update(player._id, {
                     $set: {
-                        alive: false
+                        alive: false,
+                        injections: -1
                     }
                 });
             } else {
@@ -1450,7 +1457,7 @@ Template.day.events({
                 });
             }
         } else if (game.state == "day" || game.state == "night") {
-            if (player.alive == false || player.role == "narrator" || player.voteCast === myVote || votedPlayer.alive == false || votedPlayer.role == "narrator") {
+            if (player.alive == false || player.role == "narrator" || player.voteCast === myVote || (votedPlayer.alive == false && votedPlayer.injections == -1) || votedPlayer.role == "narrator") {
                 // don't vote for yourself dummy
             } else if (player.voteCast == null) {
                 //initialize vote
