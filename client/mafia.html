@@ -262,6 +262,15 @@
 			        {{/each}}
 		        </div>
 		        {{/if}}
+            {{#if isDoctor}}
+		        <div class="center">
+			        全部被你扎过的还没死的紫薇们:
+			        {{#each otherPatient}}
+			        <br>
+			        {{ name }} {{ injections }}
+			        {{/each}}
+		        </div>
+		        {{/if}}
 		        <hr>
 		        <div class="totals">
 		        	<div class="list-group list-inline">

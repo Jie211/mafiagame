@@ -126,7 +126,8 @@ function generateNewPlayer(game, name, pass) {
         votes: 0, //how many votes player has
         isMafia: false, //Is player mafia
         healed: false, //has doctor healed player
-        alive: true //Is player alive
+        alive: true, //Is player alive
+        injections: 0//injection times
     };
 
     var playerID = Players.insert(player);
@@ -160,6 +161,7 @@ function checkVotes(day) {
         'isMafia': true,
         'alive': true
     }, {}).fetch();
+
     //load chat to purge
     var chats = Chat.find({
         'game': game._id
@@ -172,6 +174,84 @@ function checkVotes(day) {
             'votes': -1
         }
     });
+
+    if (day == 'medic'){
+     if(player.healed == true){
+       if(player.injections > 1){
+         mafiaNews(player.name, false);
+         Players.update(player._id, {
+             $set: {
+                 healed: false,
+                 alive: false
+             }
+         });
+         totalMafia = Players.find({
+             'gameID': game._id,
+             'isMafia': true,
+             'alive': true
+         }, {}).fetch();
+         var totalOther = Players.find({
+             'gameID': game._id,
+             'isMafia': false,
+             'alive': true,
+             'isNarrator': false
+         }, {}).fetch();
+
+         if (totalMafia.length === 0) {
+             GAnalytics.event("game-events", "civilianswin-night-gameend");
+             Games.update(game._id, {
+                 $set: {
+                     winner: "Civilians",
+                     special: "杀手已经全部被处死。",
+                     state: 'game_over'
+                 }
+             });
+         } else if (totalOther.length === 0) {
+             GAnalytics.event("game-events", "mafiawin-night-gameend");
+             Games.update(game._id, {
+                 $set: {
+                     winner: "The Mafia",
+                     special: "杀手笑到了最后",
+                     state: 'game_over'
+                 }
+             });
+         } else if (totalMafia.length === totalOther.length) {
+             GAnalytics.event("game-events", "mafiawin-night-gameend");
+             Games.update(game._id, {
+                 $set: {
+                     winner: "The Mafia",
+                     special: "杀手和群众人数一样，杀手获胜。",
+                     state: 'game_over'
+                 }
+             });
+         }else{
+           Games.update(game._id, {
+               $set: {
+                   waiting: "Mafia",
+                   state: 'night'
+               }
+           });
+           totalPlayers.forEach(function(each) {
+               Players.update(each._id, {
+                   $set: {
+                       votes: 0,
+                       voteCast: null
+                   }
+               });
+           });
+         }
+       }else{
+         totalPlayers.forEach(function(each) {
+             Players.update(each._id, {
+                 $set: {
+                     votes: 0,
+                     voteCast: null
+                 }
+             });
+         });
+       }
+     }
+   }
 
     if (day == "day") {
         if (player.votes > (totalPlayers.length / 2)) {
@@ -296,7 +376,7 @@ function checkVotes(day) {
                 }
             });
         });
-    } else {
+    }else {
         if (player.votes == totalMafia.length) {
             if (player.healed == false) {
                 mafiaNews(player.name, false);
@@ -1008,7 +1088,7 @@ Template.queue_list.events({
         var game = getCurrentGame();
         var players = Players.find({'gameID': game._id}, {'sort': {'createdAt': 1}}).fetch();
         assignRoles(players);
-        Games.update(game._id, {$set: {state: 'night'}});
+        Games.update(game._id, {$set: {state: 'inspection', waiting:'Inspector'}});
     },
 });
 
@@ -1070,6 +1150,14 @@ Template.day.helpers({
     isInspector: function() {
         var player = getCurrentPlayer();
         if (player.role == 'inspector') {
+            return true;
+        } else {
+            return false;
+        }
+    },
+    isDoctor: function() {
+        var player = getCurrentPlayer();
+        if (player.role == 'doctor') {
             return true;
         } else {
             return false;
@@ -1164,6 +1252,14 @@ Template.day.helpers({
         var players = Players.find({
             'gameID': Session.get("gameID"),
             'role': 'inspector'
+        }, {}).fetch();
+        return players;
+    },
+    otherPatient: function() {
+        var players = Players.find({
+            'gameID': Session.get("gameID"),
+            'healed': true,
+            'alive': true
         }, {}).fetch();
         return players;
     },
@@ -1331,12 +1427,21 @@ Template.day.events({
             if (player.alive == false || player.voteCast === myVote || votedPlayer.alive == false || votedPlayer.role == "narrator") {
                 // don't vote for yourself dummy
             } else {
-                alert("保护了" + votedPlayer.name);
+                var times = votedPlayer.injections;
+                if(times==0){
+                  alert("保护了" + votedPlayer.name);
+                }else{
+                  alert("扎死了" + votedPlayer.name);
+                }
                 Players.update(votedPlayer._id, {
                     $set: {
-                        healed: true
+                        healed: true,
+                        injections: votedPlayer.injections + 1,
+                        voteCast: myVote,
+                        votes: votedPlayer.votes + 1
                     }
                 });
+                checkVotes(game.state);
                 Games.update(game._id, {
                     $set: {
                         waiting: "Mafia",
@@ -1387,7 +1492,7 @@ Template.day.events({
         }
 
 
-        console.log('AAAAA');
+        // console.log('AAAAA');
         //add more role phases here via else if
         checkVotes(game.state);
     },
