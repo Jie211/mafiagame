@@ -22,6 +22,7 @@ A mafia game fork from [pheinrichs/meteor-mafia](https://github.com/pheinrichs/m
 
 - [ ] after doctor kill some guy by injection, "NEWs" will podcasting before mafia turn was done.
 
+- [ ] role name in game-over session still english(read from DB).
 
 ##### REFERENCES
 1. Migdał, Piotr (2010). "A mathematical model of the Mafia game".
