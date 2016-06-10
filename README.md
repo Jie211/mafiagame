@@ -1,6 +1,7 @@
 # meteor-mafia
 
 ##### Latest changes
+6/10 test deploy.
 6/10 fix bugs(order of turns), add doctor functions.
 
 --------
